@@ -4,7 +4,7 @@ Pure algorithmic strategy selection based on value tiers and auction conditions.
 Used when LLM fails validation or as baseline for comparison.
 """
 from typing import Dict, Any, Optional
-from models import AuctionContext, StrategyDecision
+from ..core.models import AuctionContext, StrategyDecision
 
 
 class RuleBasedStrategySelector:

@@ -1,7 +1,7 @@
 import pandas as pd
 from pathlib import Path
 from typing import Dict, Any, Optional
-from models import AuctionContext
+from ..core.models import AuctionContext
 
 class MarketIntelligenceLoader:
     """ Load 0 Market Intelligence - Read-only memory from offline preprocessing.

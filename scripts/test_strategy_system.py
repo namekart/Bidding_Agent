@@ -8,9 +8,9 @@ Runs the whole agent WITHOUT MySQL by driving the LangGraph directly
 import os
 import json
 from typing import Dict, Any, Optional, List
-from models import AuctionContext, BidderAnalysis, FinalDecision
-from market_intelligence import MarketIntelligenceLoader
-from strategy_graph import create_strategy_graph
+from app.core.models import AuctionContext, BidderAnalysis, FinalDecision
+from app.services.market_intelligence import MarketIntelligenceLoader
+from app.agent.strategy_graph import create_strategy_graph
 
 
 # Default LLM config (no MySQL required)

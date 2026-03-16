@@ -4,8 +4,8 @@ Wires together all decision nodes with conditional flow control.
 """
 from typing import Literal
 from langgraph.graph import StateGraph, END
-from models import AuctionState
-from graph_nodes import (
+from ..core.models import AuctionState
+from .graph_nodes import (
     safety_prefilter_node,
     llm_strategy_node,
     llm_validation_node,

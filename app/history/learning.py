@@ -1,7 +1,7 @@
 """ Learning algorithms that use historical  data to improve decisions."""
 from typing import Dict, Any , Optional, List
 from .storage import AuctionHistoryStorage
-from models import AuctionContext
+from ..core.models import AuctionContext
 
 class HistoricalLearning:
     """ Use historical data to improve bidding decisions"""

@@ -16,7 +16,7 @@ load_dotenv()
 # Add project root
 sys.path.insert(0, str(Path(__file__).parent))
 
-from models import AuctionContext, BidderAnalysis, FinalDecision
+from app.core.models import AuctionContext, BidderAnalysis, FinalDecision
 
 
 def _make_context(thread_id=None, **kwargs):
@@ -44,8 +44,8 @@ def _make_context(thread_id=None, **kwargs):
 
 def test_learning_returns_same_auction_attempts():
     """Learning.get_historical_context with thread_id returns same_auction_attempts (list)."""
-    from history.learning import HistoricalLearning
-    from history.storage import AuctionHistoryStorage
+    from app.history.learning import HistoricalLearning
+    from app.history.storage import AuctionHistoryStorage
 
     try:
         storage = AuctionHistoryStorage()
@@ -69,8 +69,8 @@ def test_learning_returns_same_auction_attempts():
 
 def test_storage_rounds():
     """With Supabase: record_round and get_rounds_for_thread."""
-    from history.models import AuctionRoundRecord
-    from history.storage import AuctionHistoryStorage
+    from app.history.models import AuctionRoundRecord
+    from app.history.storage import AuctionHistoryStorage
 
     try:
         storage = AuctionHistoryStorage()
@@ -121,9 +121,9 @@ def test_storage_rounds():
 
 def test_selector_record_round_outcome():
     """With Supabase: HybridStrategySelector.record_round_outcome then get_historical_context has attempts."""
-    from history.learning import HistoricalLearning
-    from history.storage import AuctionHistoryStorage
-    from hybrid_strategy_selector import HybridStrategySelector
+    from app.history.learning import HistoricalLearning
+    from app.history.storage import AuctionHistoryStorage
+    from app.agent.hybrid_strategy_selector import HybridStrategySelector
 
     try:
         selector = HybridStrategySelector()

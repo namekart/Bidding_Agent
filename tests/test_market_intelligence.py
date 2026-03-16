@@ -5,9 +5,9 @@ Tests the Layer 0 market intelligence integration with the auction strategy syst
 import os
 import json
 from typing import Dict, Any
-from models import AuctionContext, BidderAnalysis
-from hybrid_strategy_selector import HybridStrategySelector
-from market_intelligence import MarketIntelligenceLoader
+from app.core.models import AuctionContext, BidderAnalysis
+from app.agent.hybrid_strategy_selector import HybridStrategySelector
+from app.services.market_intelligence import MarketIntelligenceLoader
 
 
 def test_market_intelligence_loader():

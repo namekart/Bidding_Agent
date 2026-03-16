@@ -3,7 +3,7 @@ Layer 1: Hardcoded Safety Pre-Filters
 Pure Python logic that blocks unsafe auctions before LLM processing.
 """
 from typing import Dict, Any, Optional
-from models import AuctionContext
+from .models import AuctionContext
 
 
 class SafetyPreFilters:

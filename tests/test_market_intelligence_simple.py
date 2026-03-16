@@ -5,8 +5,8 @@ Tests the Layer 0 market intelligence without requiring MySQL.
 import os
 import json
 from typing import Dict, Any
-from models import AuctionContext, BidderAnalysis
-from market_intelligence import MarketIntelligenceLoader
+from app.core.models import AuctionContext, BidderAnalysis
+from app.services.market_intelligence import MarketIntelligenceLoader
 
 
 def test_market_intelligence_basic():

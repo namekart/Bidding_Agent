@@ -5,12 +5,12 @@ Production-grade multi-agent system for domain auction bidding strategy.
 import os
 from datetime import datetime
 from typing import Dict, Any, Optional
-from models import AuctionContext, FinalDecision
-from history.storage import AuctionHistoryStorage
-from history.learning import HistoricalLearning
-from history.models import AuctionOutcome, AuctionRoundRecord
-from strategy_graph import create_strategy_graph
-from market_intelligence import MarketIntelligenceLoader
+from ..core.models import AuctionContext, FinalDecision
+from ..history.storage import AuctionHistoryStorage
+from ..history.learning import HistoricalLearning
+from ..history.models import AuctionOutcome, AuctionRoundRecord
+from .strategy_graph import create_strategy_graph
+from ..services.market_intelligence import MarketIntelligenceLoader
 
 
 class HybridStrategySelector:

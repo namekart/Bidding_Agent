@@ -3,13 +3,13 @@ Standalone test that bypasses MySQL storage entirely
 Tests multiple real-world scenarios with different domains and bidder profiles.
 Analyzes buyer types and strategy selection.
 """
-from models import AuctionContext, BidderAnalysis
-from market_intelligence import MarketIntelligenceLoader
-from safety_filters import SafetyPreFilters
-from rule_based_strategy import RuleBasedStrategySelector
-from llm_strategy import LLMStrategySelector
-from proxy_logic import ProxyLogicHandler
-from validation import StrategyValidator
+from app.core.models import AuctionContext, BidderAnalysis
+from app.services.market_intelligence import MarketIntelligenceLoader
+from app.core.safety_filters import SafetyPreFilters
+from app.agent.rule_based_strategy import RuleBasedStrategySelector
+from app.agent.llm_strategy import LLMStrategySelector
+from app.agent.proxy_logic import ProxyLogicHandler
+from app.core.validation import StrategyValidator
 
 def analyze_bidder_type(bidder_intel):
     """Analyze and classify bidder type based on intelligence."""

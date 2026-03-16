@@ -8,10 +8,10 @@ from datetime import datetime
 # Add project root to path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from history.models import AuctionOutcome
-from history.storage import AuctionHistoryStorage
-from history.learning import HistoricalLearning
-from models import AuctionContext, BidderAnalysis
+from app.history.models import AuctionOutcome
+from app.history.storage import AuctionHistoryStorage
+from app.history.learning import HistoricalLearning
+from app.core.models import AuctionContext, BidderAnalysis
 
 def test_mysql_storage():
     """Test MySQL storage operations"""
@@ -175,7 +175,7 @@ def test_hybrid_selector_with_mysql():
     }
     
     try:
-        from hybrid_strategy_selector import HybridStrategySelector
+        from app.agent.hybrid_strategy_selector import HybridStrategySelector
         
         print("\n1. Initializing HybridStrategySelector with MySQL...")
         selector = HybridStrategySelector(

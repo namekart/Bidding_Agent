@@ -4,7 +4,7 @@ Validates LLM strategy decisions against safety rules and logical consistency.
 Uses tiered validation: HARD errors block, SOFT errors warn but allow.
 """
 from typing import Dict, Any, Tuple, Optional, List
-from models import AuctionContext, StrategyDecision
+from .models import AuctionContext, StrategyDecision
 
 
 class ValidationResult:

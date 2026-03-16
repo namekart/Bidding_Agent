@@ -12,10 +12,10 @@ import os
 import sys
 from typing import Optional, Dict, Any
 
-from models import AuctionContext, BidderAnalysis, FinalDecision
-from market_intelligence import MarketIntelligenceLoader
-from strategy_graph import create_strategy_graph
-from models import AuctionState
+from app.core.models import AuctionContext, BidderAnalysis, FinalDecision
+from app.services.market_intelligence import MarketIntelligenceLoader
+from app.agent.strategy_graph import create_strategy_graph
+from app.core.models import AuctionState
 
 
 def make_context(
@@ -126,7 +126,7 @@ def test_whole_agent_via_selector(
     model: str = "openai/gpt-5.1",
 ) -> FinalDecision:
     """Test the full agent via HybridStrategySelector.select_strategy (requires MySQL)."""
-    from hybrid_strategy_selector import HybridStrategySelector
+    from app.agent.hybrid_strategy_selector import HybridStrategySelector
 
     selector = HybridStrategySelector(
         llm_provider=llm_provider,

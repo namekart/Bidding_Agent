@@ -8,8 +8,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from dotenv import load_dotenv
 load_dotenv()
 
-from models import AuctionContext, BidderAnalysis
-from hybrid_strategy_selector import HybridStrategySelector
+from app.core.models import AuctionContext, BidderAnalysis
+from app.agent.hybrid_strategy_selector import HybridStrategySelector
 
 def main():
     bidder_analysis = BidderAnalysis(

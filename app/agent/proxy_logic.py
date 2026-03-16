@@ -4,7 +4,7 @@ Handles outbid scenarios and proxy adjustment decisions.
 Core logic for "should I increase my proxy or accept loss?"
 """
 from typing import Dict, Any
-from models import AuctionContext, StrategyDecision, ProxyDecision
+from ..core.models import AuctionContext, StrategyDecision, ProxyDecision
 
 
 class ProxyLogicHandler:
