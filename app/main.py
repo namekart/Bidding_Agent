@@ -1,4 +1,3 @@
-import logging
 import os 
 import time
 from fastapi import FastAPI, HTTPException
@@ -15,9 +14,6 @@ app = FastAPI(
     description="API for the LangGraph Bidding Strategy Agent",
     version="1.0"
 )
-
-logger = logging.getLogger(__name__)
-
 
 def _truncate(value: Any, limit: int = 3000) -> str:
     text = str(value)
@@ -68,28 +64,28 @@ async def get_bidding_strategy(request: StrategyRequest):
     """
     start_time = time.perf_counter()
     try:
-        logger.info(
-            "Incoming strategy request: domain=%s platform=%s current_bid=%s estimated_value=%s num_bidders=%s hours_remaining=%s",
-            request.context.domain,
-            request.context.platform,
-            request.context.current_bid,
-            request.context.estimated_value,
-            request.context.num_bidders,
-            request.context.hours_remaining,
+        print(
+            "Incoming strategy request: "
+            f"domain={request.context.domain} "
+            f"platform={request.context.platform} "
+            f"current_bid={request.context.current_bid} "
+            f"estimated_value={request.context.estimated_value} "
+            f"num_bidders={request.context.num_bidders} "
+            f"hours_remaining={request.context.hours_remaining}"
         )
         selector = get_strategy_selector()
         # The selector.select_strategy method automatically invokes the LangGraph workflow
         decision = selector.select_strategy(request.context)
 
         latency_ms = int((time.perf_counter() - start_time) * 1000)
-        logger.info(
-            "Strategy response sent: domain=%s strategy=%s recommended_bid_amount=%s risk_level=%s confidence=%s latency_ms=%s",
-            request.context.domain,
-            decision.strategy,
-            decision.recommended_bid_amount,
-            decision.risk_level,
-            decision.confidence,
-            latency_ms,
+        print(
+            "Strategy response sent: "
+            f"domain={request.context.domain} "
+            f"strategy={decision.strategy} "
+            f"recommended_bid_amount={decision.recommended_bid_amount} "
+            f"risk_level={decision.risk_level} "
+            f"confidence={decision.confidence} "
+            f"latency_ms={latency_ms}"
         )
         
         return StrategyResponse(
@@ -99,21 +95,21 @@ async def get_bidding_strategy(request: StrategyRequest):
 
     except RuntimeError as e:
         latency_ms = int((time.perf_counter() - start_time) * 1000)
-        logger.warning(
-            "Strategy request failed with runtime error: domain=%s latency_ms=%s error=%s",
-            getattr(request.context, "domain", "unknown"),
-            latency_ms,
-            _truncate(e),
+        print(
+            "Strategy request failed with runtime error: "
+            f"domain={getattr(request.context, 'domain', 'unknown')} "
+            f"latency_ms={latency_ms} "
+            f"error={_truncate(e)}"
         )
         raise HTTPException(status_code=503, detail=str(e))
     except Exception as e:
         # In a production environment, you might want more granular error handling here
         latency_ms = int((time.perf_counter() - start_time) * 1000)
-        logger.exception(
-            "Strategy request failed with unexpected error: domain=%s latency_ms=%s error=%s",
-            getattr(request.context, "domain", "unknown"),
-            latency_ms,
-            _truncate(e),
+        print(
+            "Strategy request failed with unexpected error: "
+            f"domain={getattr(request.context, 'domain', 'unknown')} "
+            f"latency_ms={latency_ms} "
+            f"error={_truncate(e)}"
         )
         raise HTTPException(status_code=500, detail=str(e))
 
