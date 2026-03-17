@@ -10,7 +10,7 @@ class MarketIntelligenceLoader:
 
     def __init__(self, data_dir:str = "."):
         """ Load all parquet files at initialization."""
-        data_path = Path(data_dir)
+        data_path = Path(__file__).resolve().parents[1] / "data" / "parquet"
 
         # Load Layer 0 intelligence files 
         self.bidder_profiles = pd.read_parquet(data_path / "layer0_bidder_profiles.parquet")
