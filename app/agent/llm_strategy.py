@@ -3,11 +3,21 @@ Layer 2: LLM-Based Strategy Reasoning
 Uses Claude/GPT to make intelligent bidding strategy decisions.
 """
 import json
+import logging
 import os
 import time
 from typing import Dict, Any, Optional
 from functools import wraps
 from ..core.models import AuctionContext, StrategyDecision
+
+logger = logging.getLogger(__name__)
+
+
+def _truncate(value: Any, limit: int = 3000) -> str:
+    text = str(value)
+    if len(text) <= limit:
+        return text
+    return text[:limit] + "...(truncated)"
 
 
 
@@ -30,10 +40,20 @@ def retry_with_backoff(max_retries: int = 3, base_delay: float=1.0, max_delay:fl
 
                     if attempt < max_retries -1:
                         delay = min(base_delay *(2 ** attempt), max_delay)
-                        print(f"LLM call attempt {attempt + 1} failed: {e}. Retrying in {delay:.1f}s...")
+                        logger.warning(
+                            "LLM call attempt failed: attempt=%s max_retries=%s retry_in_s=%.1f error=%s",
+                            attempt + 1,
+                            max_retries,
+                            delay,
+                            _truncate(e),
+                        )
                         time.sleep(delay)
                     else:
-                        print(f"LLM call failed after {max_retries} attempts: {e}")
+                        logger.error(
+                            "LLM call failed after retries: max_retries=%s error=%s",
+                            max_retries,
+                            _truncate(e),
+                        )
 
 
             return None
@@ -101,9 +121,9 @@ class LLMStrategySelector:
                         key, value = line.split("=", 1)
                         os.environ.setdefault(key.strip(), value.strip())
             except UnicodeDecodeError:
-                print("DEBUG: .env file has encoding issues, skipping .env loading")
+                logger.warning(".env file has encoding issues; skipping .env loading")
             except Exception as e:
-                print(f"DEBUG: Error loading .env file: {e}, skipping .env loading")        
+                logger.warning("Error loading .env file; skipping .env loading: %s", _truncate(e))
 
     def _get_system_prompt(self) -> str:
         """Get the system prompt that defines the AI's role and reasoning framework."""
@@ -216,7 +236,10 @@ You are an expert domain auction strategist with deep knowledge of:
 
         # Debug: Print market intelligence section to verify what's being sent to LLM
         if market_intelligence:
-            print(f"\n[DEBUG] Market Intelligence Section Being Sent to LLM:\n{market_intel_section}")
+            logger.debug(
+                "Market intelligence section for LLM prompt: %s",
+                _truncate(market_intel_section),
+            )
 
         # Previous attempts in THIS auction (when thread_id is set and we got outbid before)
         same_auction_section = ""
@@ -341,6 +364,18 @@ Respond with ONLY a valid JSON object matching this schema:
         Returns StrategyDecision object or None if LLM call fails.
         """
         try:
+            request_started = time.perf_counter()
+            logger.info(
+                "LLM strategy input received: domain=%s platform=%s estimated_value=%s current_bid=%s num_bidders=%s hours_remaining=%s provider=%s model=%s",
+                context.domain,
+                context.platform,
+                context.estimated_value,
+                context.current_bid,
+                context.num_bidders,
+                context.hours_remaining,
+                self.provider,
+                self.model,
+            )
             same_auction_attempts = (historical_context or {}).get("same_auction_attempts") or []
             system_prompt = self._get_system_prompt()
             user_prompt = self._get_user_prompt(
@@ -353,7 +388,7 @@ Respond with ONLY a valid JSON object matching this schema:
             content = None
 
             if self.provider == "anthropic":
-                print("DEBUG: Using Anthropic API")
+                logger.debug("Using Anthropic API for domain=%s model=%s", context.domain, self.model)
                 response = self.client.messages.create(
                     model=self.model,
                     max_tokens=2000,
@@ -377,6 +412,12 @@ Respond with ONLY a valid JSON object matching this schema:
                 )
                 content = response.choices[0].message.content
 
+            logger.info(
+                "LLM raw response received: domain=%s response_preview=%s",
+                context.domain,
+                _truncate(content),
+            )
+
             # Parse JSON response (only if we got content from API)
             if content is not None:
                 try:
@@ -390,18 +431,38 @@ Respond with ONLY a valid JSON object matching this schema:
                     # Validate and create StrategyDecision object
                     decision = StrategyDecision(**parsed)
 
+                    latency_ms = int((time.perf_counter() - request_started) * 1000)
+                    logger.info(
+                        "LLM strategy decision ready: domain=%s strategy=%s recommended_bid_amount=%s risk_level=%s confidence=%s latency_ms=%s",
+                        context.domain,
+                        decision.strategy,
+                        decision.recommended_bid_amount,
+                        decision.risk_level,
+                        decision.confidence,
+                        latency_ms,
+                    )
+
                     return decision
 
                 except (json.JSONDecodeError, ValueError) as e:
-                    print(f"Failed to parse LLM response: {e}")
-                    print(f"Raw content: {content}")
+                    logger.warning(
+                        "Failed to parse LLM response: domain=%s error=%s raw_content=%s",
+                        context.domain,
+                        _truncate(e),
+                        _truncate(content),
+                    )
                     return None
             else:
                 # API call failed, content never set
+                logger.warning("LLM call returned empty content: domain=%s", context.domain)
                 return None
 
         except Exception as e:
-            print(f"LLM strategy call failed: {e}")
+            logger.exception(
+                "LLM strategy call failed: domain=%s error=%s",
+                getattr(context, "domain", "unknown"),
+                _truncate(e),
+            )
             return None
 
 
