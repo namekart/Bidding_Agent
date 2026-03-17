@@ -23,7 +23,6 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 # ---------- Copy project ----------
 COPY app ./app
-COPY .env .env
 
 # if parquet/sql outside app, copy them also
 # COPY data ./data
