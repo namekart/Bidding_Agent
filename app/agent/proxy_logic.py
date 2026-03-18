@@ -19,6 +19,17 @@ class ProxyLogicHandler:
         return estimated_value * 1.0
 
     @staticmethod
+    def resolve_next_bid(context: "AuctionContext", increment: float) -> float:
+        """
+        Use the platform-provided next_min_valid_bid if it is a valid positive number,
+        otherwise fall back to current_bid + increment.
+        """
+        nvb = getattr(context, "next_min_valid_bid", -1.0)
+        if nvb is not None and nvb > 0:
+            return nvb
+        return context.current_bid + increment
+
+    @staticmethod
     def get_platform_increment(platform: str, current_bid: float) -> float:
         """
         Get minimum increment for the platform.
@@ -53,7 +64,7 @@ class ProxyLogicHandler:
         # SCENARIO 1: No current proxy set (first bid)
         if current_proxy == 0:
             new_proxy_max = min(safe_max, context.budget_available, context.estimated_value)
-            next_bid = current_bid + increment
+            next_bid = ProxyLogicHandler.resolve_next_bid(context, increment)
 
             return ProxyDecision(
                 current_proxy=current_proxy,
@@ -68,7 +79,7 @@ class ProxyLogicHandler:
                     f"INITIAL PROXY SETUP: No current proxy set. "
                     f"Safe max calculated as ${safe_max:.2f} (100% of ${context.estimated_value:.2f} max budget). "
                     f"Setting proxy to ${new_proxy_max:.2f}. "
-                    f"Next visible bid will be ${next_bid:.2f} (${current_bid:.2f} + ${increment:.2f} increment). "
+                    f"Next visible bid will be ${next_bid:.2f} (${current_bid:.2f} + ${next_bid - current_bid:.2f} increment). "
                     f"Domain will never cost more than ${new_proxy_max:.2f} even if fully contested."
                 )
             )
@@ -101,7 +112,7 @@ class ProxyLogicHandler:
         min_increase_threshold = increment * 3  # At least 3 increments of headroom
 
         if potential_new_proxy > current_proxy + min_increase_threshold:
-            next_bid = current_bid + increment
+            next_bid = ProxyLogicHandler.resolve_next_bid(context, increment)
  
             return ProxyDecision(
                 current_proxy=current_proxy,
@@ -116,7 +127,7 @@ class ProxyLogicHandler:
                     f"PROXY INCREASE OPTIMAL: Safe max (${safe_max:.2f}) exceeds current bid (${current_bid:.2f}). "
                     f"Current proxy (${current_proxy:.2f}) insufficient for profit protection. "
                     f"Increasing proxy to ${potential_new_proxy:.2f}. "
-                    f"Next visible bid will be ${next_bid:.2f} (${current_bid:.2f} + ${increment:.2f} increment). "
+                    f"Next visible bid will be ${next_bid:.2f} (${current_bid:.2f} + ${next_bid - current_bid:.2f} increment). "
                     f"Domain cost capped at ${potential_new_proxy:.2f} (max budget)."
                 )
             )
@@ -151,7 +162,7 @@ class ProxyLogicHandler:
         proxy_analysis = ProxyLogicHandler.analyze_proxy_situation(context, strategy_decision)
 
         # Update strategy decision with proxy logic results
-        updated_decision = strategy_decision.copy()
+        updated_decision = strategy_decision.model_copy()
         updated_decision.should_increase_proxy = proxy_analysis.should_increase_proxy
         updated_decision.next_bid_amount = proxy_analysis.next_bid_amount
         updated_decision.max_budget_for_domain = proxy_analysis.max_budget_for_domain

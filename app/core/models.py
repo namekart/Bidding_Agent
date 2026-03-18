@@ -24,6 +24,7 @@ class AuctionContext(BaseModel):
     hours_remaining: float = Field(..., ge=0, description="Hours until auction ends")
     your_current_proxy: float = Field(..., ge=0, description="Your current proxy bid max (0 if none)")
     budget_available: float = Field(..., ge=0, description="Remaining global budget")
+    next_min_valid_bid: float = Field(default=-1.0, description="Platform-provided next accepted bid amount. -1.0 means unknown/unavailable.")
     bidder_analysis: BidderAnalysis = Field(..., description="Analysis of bidder behavior")
     thread_id: Optional[str] = None
 

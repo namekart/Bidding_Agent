@@ -32,7 +32,7 @@ def safety_prefilter_node(state: AuctionState) -> AuctionState:
             "strategy": safety_result.get("strategy", "do_not_bid"),
             "recommended_bid_amount": safety_result.get("recommended_bid_amount", 0.0),
             "should_increase_proxy": False,
-            "next_bid_amount": None,
+            "next_min_valid_bid": None,
             "max_budget_for_domain": 0.0,
             "risk_level": safety_result.get("risk_level", "high"),
             "confidence": safety_result.get("confidence", 0.95),

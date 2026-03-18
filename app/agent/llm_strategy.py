@@ -138,6 +138,7 @@ You are an expert domain auction strategist with deep knowledge of:
 2. **Safety Ceiling**: Do not recommend bids above 100% of estimated value (max budget).
 3. **Platform Awareness**: Respect 5-minute extensions and auto-bidding rules
 4. **Opponent Analysis**: Adjust strategy based on bot vs human behavior
+5. **next_min_valid_bid**: Some platforms provides the next minimum valid bid. Use it to inform incremental strategies, but you can recommend a bid above it if justified by estimated value and competition.
 
 ## Strategy Options
 
@@ -268,6 +269,7 @@ You are an expert domain auction strategist with deep knowledge of:
 - Budget Available: ${context.budget_available:.2f}
 - Safe Max (100% max budget): ${safe_max:.2f}
 - Hard Ceiling (100% of value): ${hard_ceiling:.2f}
+- Next Min Valid Bid: ${context.next_min_valid_bid:.2f} (if provided by platform, otherwise it will be -1.0)
 
 **Competition**:
 - Active Bidders: {context.num_bidders}
@@ -368,7 +370,7 @@ Respond with ONLY a valid JSON object matching this schema:
                 f"num_bidders={context.num_bidders} "
                 f"hours_remaining={context.hours_remaining} "
                 f"provider={self.provider} "
-                f"model={self.model}"
+                f"model={self.model}\n"
             )
             same_auction_attempts = (historical_context or {}).get("same_auction_attempts") or []
             system_prompt = self._get_system_prompt()
