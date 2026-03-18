@@ -17,7 +17,7 @@ class BidderAnalysis(TypedDict):
 class AuctionContext(BaseModel):
     """Input context for auction decision making"""
     domain: str = Field(..., description="Domain name being auctioned")
-    platform: Literal["godaddy", "namejet", "dynadot"] = Field(..., description="Auction platform")
+    platform: Literal["godaddy", "namejet", "dynadot", "namecheap", "namesilo"] = Field(..., description="Auction platform")
     estimated_value: float = Field(..., gt=0, description="External valuation estimate")
     current_bid: float = Field(..., ge=0, description="Current highest bid")
     num_bidders: int = Field(..., ge=0, description="Number of active bidders")

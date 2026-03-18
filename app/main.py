@@ -71,7 +71,7 @@ async def get_bidding_strategy(request: StrategyRequest):
             f"current_bid={request.context.current_bid} "
             f"estimated_value={request.context.estimated_value} "
             f"num_bidders={request.context.num_bidders} "
-            f"hours_remaining={request.context.hours_remaining}"
+            f"hours_remaining={request.context.hours_remaining}\n"
         )
         selector = get_strategy_selector()
         # The selector.select_strategy method automatically invokes the LangGraph workflow
@@ -85,7 +85,7 @@ async def get_bidding_strategy(request: StrategyRequest):
             f"recommended_bid_amount={decision.recommended_bid_amount} "
             f"risk_level={decision.risk_level} "
             f"confidence={decision.confidence} "
-            f"latency_ms={latency_ms}"
+            f"latency_ms={latency_ms}\n"
         )
         
         return StrategyResponse(
